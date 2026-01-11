@@ -37,9 +37,9 @@ export function MorningSummary({ onRefresh }: MorningSummaryProps) {
   }
 
   return (
-    <div className="bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-500/20 rounded-lg p-4">
+    <div className="bg-[var(--background-secondary)] border border-[var(--border)] rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-medium text-violet-300">Focus for Today</h2>
+        <h2 className="text-sm font-medium text-[var(--accent)]">Focus for Today</h2>
         <button
           onClick={loadSummary}
           disabled={loading}
@@ -63,7 +63,7 @@ export function MorningSummary({ onRefresh }: MorningSummaryProps) {
         <ul className="space-y-2">
           {bullets.map((bullet, i) => (
             <li key={i} className="text-sm text-[var(--foreground)] flex items-start gap-2">
-              <span className="text-violet-400 mt-1">•</span>
+              <span className="text-[var(--accent)] mt-1">•</span>
               <span>{bullet}</span>
             </li>
           ))}

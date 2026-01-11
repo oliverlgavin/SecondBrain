@@ -123,8 +123,8 @@ export function TaskChat({ taskId, userLocation, onTaskUpdate, hasLocation = fal
           <div className="space-y-4">
             {/* Status indicator for location tasks */}
             {hasLocation && travelTime && (
-              <div className="bg-violet-500/10 border border-violet-500/20 rounded-lg p-3 text-sm">
-                <div className="flex items-center gap-2 text-violet-400">
+              <div className="bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-lg p-3 text-sm">
+                <div className="flex items-center gap-2 text-[var(--accent)]">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   </svg>
@@ -190,7 +190,7 @@ export function TaskChat({ taskId, userLocation, onTaskUpdate, hasLocation = fal
       {/* Input */}
       <div className="p-4 border-t border-[var(--border)]">
         <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-lg overflow-hidden">
-          <span className="pl-3 text-violet-400 font-mono text-sm">&gt;</span>
+          <span className="pl-3 text-[var(--accent)] font-mono text-sm">&gt;</span>
           <input
             type="text"
             value={input}
@@ -203,7 +203,7 @@ export function TaskChat({ taskId, userLocation, onTaskUpdate, hasLocation = fal
           <button
             onClick={sendMessage}
             disabled={!input.trim() || isLoading}
-            className="px-3 py-2 text-violet-400 hover:text-violet-300 disabled:text-zinc-600 transition-colors"
+            className="px-3 py-2 text-[var(--accent)] hover:text-violet-300 disabled:text-zinc-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />

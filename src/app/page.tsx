@@ -6,6 +6,7 @@ import { LiveCard } from '@/components/LiveCard';
 import { MorningSummary } from '@/components/MorningSummary';
 import { ReviewSidebar } from '@/components/ReviewSidebar';
 import { SavedIdeas } from '@/components/SavedIdeas';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { createClientSupabase } from '@/lib/supabase-client';
 import type { Entry, Category } from '@/lib/supabase';
 
@@ -167,12 +168,15 @@ export default function Dashboard() {
       <div className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 w-full">
         <header className="flex items-center justify-between mb-6 sm:mb-8">
           <h1 className="text-xl sm:text-2xl font-semibold text-[var(--foreground)]">Second Brain</h1>
-          <button
-            onClick={handleLogout}
-            className="text-sm text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
-          >
-            Sign out
-          </button>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <button
+              onClick={handleLogout}
+              className="text-sm text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
+            >
+              Sign out
+            </button>
+          </div>
         </header>
 
         <div className="space-y-6 sm:space-y-8">

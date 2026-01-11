@@ -63,12 +63,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--background)] px-4">
       <div className="w-full max-w-sm p-6 sm:p-8">
-        <h1 className="text-2xl font-semibold text-zinc-100 mb-2 text-center">
+        <h1 className="text-2xl font-semibold text-[var(--foreground)] mb-2 text-center">
           Second Brain
         </h1>
-        <p className="text-zinc-500 text-sm text-center mb-8">
+        <p className="text-[var(--foreground-muted)] text-sm text-center mb-8">
           {isSignUp ? 'Create an account to get started' : 'Sign in to continue'}
         </p>
 
@@ -78,7 +78,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
+            className="w-full px-4 py-3 bg-[var(--background-secondary)] border border-[var(--border)] rounded-lg text-[var(--foreground)] placeholder-[var(--foreground-muted)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
             autoFocus
             required
           />
@@ -88,7 +88,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
+            className="w-full px-4 py-3 bg-[var(--background-secondary)] border border-[var(--border)] rounded-lg text-[var(--foreground)] placeholder-[var(--foreground-muted)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
             required
           />
 
@@ -98,7 +98,7 @@ export default function LoginPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm Password"
-              className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
+              className="w-full px-4 py-3 bg-[var(--background-secondary)] border border-[var(--border)] rounded-lg text-[var(--foreground)] placeholder-[var(--foreground-muted)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
               required
             />
           )}
@@ -118,14 +118,14 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-zinc-500 text-sm">
+        <p className="mt-6 text-center text-[var(--foreground-muted)] text-sm">
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
           <button
             onClick={() => {
               setIsSignUp(!isSignUp);
               setError('');
             }}
-            className="text-violet-400 hover:text-violet-300"
+            className="text-[var(--accent)] hover:text-violet-300"
           >
             {isSignUp ? 'Sign In' : 'Sign Up'}
           </button>

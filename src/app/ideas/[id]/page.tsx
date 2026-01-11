@@ -121,7 +121,7 @@ export default function IdeaPage() {
           <p className="text-red-400 mb-4">{error || 'Idea not found'}</p>
           <button
             onClick={() => router.push('/')}
-            className="text-violet-400 hover:text-violet-300"
+            className="text-[var(--accent)] hover:text-violet-300"
           >
             Back to Dashboard
           </button>
@@ -169,7 +169,7 @@ export default function IdeaPage() {
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-sm font-medium ${
                     saveState === 'saved'
                       ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/30'
-                      : 'bg-zinc-700 text-zinc-300 border border-zinc-600'
+                      : 'bg-[var(--background-tertiary)] text-[var(--foreground-muted)] border border-[var(--border)]'
                   }`}
                 >
                   {saveState === 'saving' ? (
@@ -196,7 +196,7 @@ export default function IdeaPage() {
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all text-sm font-medium ${
                     isSavedToCollection
                       ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30'
-                      : 'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:bg-zinc-700 hover:text-zinc-300'
+                      : 'bg-[var(--background-tertiary)] text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-[var(--background-secondary)] hover:text-[var(--foreground)]'
                   }`}
                 >
                   {savingToCollection ? (
@@ -226,7 +226,7 @@ export default function IdeaPage() {
 
             <div className="space-y-6 sm:space-y-8">
               {/* Idea Header */}
-              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-6">
+              <div className="bg-[var(--background-secondary)] border border-[var(--border)] rounded-xl p-4 sm:p-6">
                 <div className="flex items-start justify-between mb-4 gap-2">
                   <span className="px-2 sm:px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs sm:text-sm rounded-full">
                     {ideaData.category}
@@ -253,8 +253,8 @@ export default function IdeaPage() {
 
               {/* Notes - if any */}
               {ideaData.notes && (
-                <div className="bg-violet-500/10 border border-violet-500/20 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-violet-400 text-sm font-medium mb-2">
+                <div className="bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-[var(--accent)] text-sm font-medium mb-2">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
@@ -265,14 +265,14 @@ export default function IdeaPage() {
               )}
 
               {/* Implementation Steps */}
-              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-6">
+              <div className="bg-[var(--background-secondary)] border border-[var(--border)] rounded-xl p-4 sm:p-6">
                 <h2 className="text-base sm:text-lg font-semibold text-[var(--foreground)] mb-4 sm:mb-6">
                   Implementation Steps
                 </h2>
                 <div className="space-y-4 sm:space-y-6">
                   {suggestions.steps.map((step, index) => (
                     <div key={index} className="flex gap-3 sm:gap-4">
-                      <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 bg-violet-500/20 text-violet-400 rounded-full flex items-center justify-center font-medium text-sm sm:text-base">
+                      <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 bg-[var(--accent)]/20 text-[var(--accent)] rounded-full flex items-center justify-center font-medium text-sm sm:text-base">
                         {index + 1}
                       </div>
                       <div className="min-w-0">
@@ -286,7 +286,7 @@ export default function IdeaPage() {
 
               {/* Resources */}
               {suggestions.resources.length > 0 && (
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-6">
+                <div className="bg-[var(--background-secondary)] border border-[var(--border)] rounded-xl p-4 sm:p-6">
                   <h2 className="text-base sm:text-lg font-semibold text-[var(--foreground)] mb-4">
                     Helpful Resources
                   </h2>
@@ -305,7 +305,7 @@ export default function IdeaPage() {
 
               {/* Considerations */}
               {suggestions.considerations.length > 0 && (
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-6">
+                <div className="bg-[var(--background-secondary)] border border-[var(--border)] rounded-xl p-4 sm:p-6">
                   <h2 className="text-base sm:text-lg font-semibold text-[var(--foreground)] mb-4">
                     Things to Consider
                   </h2>

@@ -15,6 +15,22 @@
   --error: #ef4444;
 }
 
+:root[data-theme="light"],
+[data-theme="light"] {
+  --background: #ffffff !important;
+  --background-secondary: #f5f5f5 !important;
+  --background-tertiary: #e5e5e5 !important;
+  --foreground: #171717 !important;
+  --foreground-muted: #525252 !important;
+  --accent: #2563eb !important;
+  --accent-hover: #1d4ed8 !important;
+  --border: #d4d4d4 !important;
+  --border-hover: #a3a3a3 !important;
+  --success: #16a34a !important;
+  --warning: #d97706 !important;
+  --error: #dc2626 !important;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);

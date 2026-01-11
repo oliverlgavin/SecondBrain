@@ -176,7 +176,7 @@ export function IdeaChat({ ideaId, suggestions, onIdeaUpdate }: IdeaChatProps) {
       {/* Input */}
       <div className="p-4 border-t border-[var(--border)]">
         <div className="flex items-center bg-[var(--background)] border border-[var(--border)] rounded-lg overflow-hidden">
-          <span className="pl-3 text-violet-400 font-mono text-sm">&gt;</span>
+          <span className="pl-3 text-[var(--accent)] font-mono text-sm">&gt;</span>
           <input
             type="text"
             value={input}
@@ -189,7 +189,7 @@ export function IdeaChat({ ideaId, suggestions, onIdeaUpdate }: IdeaChatProps) {
           <button
             onClick={sendMessage}
             disabled={!input.trim() || isLoading}
-            className="px-3 py-2 text-violet-400 hover:text-violet-300 disabled:text-zinc-600 transition-colors"
+            className="px-3 py-2 text-[var(--accent)] hover:text-violet-300 disabled:text-zinc-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />

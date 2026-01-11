@@ -114,7 +114,7 @@ export default function TaskDetailPage() {
     return (
       <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center gap-4">
         <p className="text-red-400">{error || 'Task not found'}</p>
-        <Link href="/" className="text-violet-400 hover:underline">
+        <Link href="/" className="text-[var(--accent)] hover:underline">
           ← Back to Dashboard
         </Link>
       </div>
@@ -167,7 +167,7 @@ export default function TaskDetailPage() {
                 {priority.toUpperCase()}
               </span>
               {hasLocation && (
-                <span className="text-xs text-violet-400 flex items-center gap-1">
+                <span className="text-xs text-[var(--accent)] flex items-center gap-1">
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
                   </svg>
@@ -196,7 +196,7 @@ export default function TaskDetailPage() {
             <div className="mb-8">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -204,7 +204,7 @@ export default function TaskDetailPage() {
                 </div>
                 {travelTime && (
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-violet-400 font-medium">{travelTime}</span>
+                    <span className="text-[var(--accent)] font-medium">{travelTime}</span>
                     {travelDistance && <span className="text-[var(--foreground-muted)]">({travelDistance})</span>}
                   </div>
                 )}
@@ -214,7 +214,7 @@ export default function TaskDetailPage() {
                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(taskData.location!)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-3 inline-flex items-center gap-2 text-sm text-violet-400 hover:text-violet-300 transition-colors"
+                className="mt-3 inline-flex items-center gap-2 text-sm text-[var(--accent)] hover:text-violet-300 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
