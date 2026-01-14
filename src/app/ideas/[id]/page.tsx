@@ -99,8 +99,53 @@ export default function IdeaPage() {
     }
   }, [ideaId]);
 
-  const handleDownloadPDF = () => {
-    window.open(`/api/ideas/${ideaId}/pdf`, '_blank');
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadPDF = async () => {
+    if (!idea || !suggestions || isDownloading) return;
+
+    setIsDownloading(true);
+
+    try {
+      // Create FormData to send suggestions
+      const formData = new FormData();
+      formData.append('suggestions', JSON.stringify(suggestions));
+
+      const response = await fetch(`/api/ideas/${ideaId}/pdf`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
+      // Get the blob from response
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+
+      // Get filename from Content-Disposition header or use default
+      const contentDisposition = response.headers.get('Content-Disposition');
+      const filenameMatch = contentDisposition?.match(/filename="(.+)"/);
+      const filename = filenameMatch ? filenameMatch[1] : 'idea_plan.pdf';
+
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the URL
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('PDF download error:', error);
+      alert('Failed to download PDF. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   if (loading) {
@@ -149,7 +194,7 @@ export default function IdeaPage() {
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Main Content */}
         <div className="flex-1">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8">
             {/* Top Bar */}
             <div className="flex items-center justify-between mb-8">
               <button
@@ -214,12 +259,19 @@ export default function IdeaPage() {
                 {/* PDF Download Button */}
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition-colors text-sm font-medium"
+                  disabled={isDownloading}
+                  className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:bg-violet-800 disabled:cursor-not-allowed text-white rounded-lg transition-colors text-sm font-medium"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Download PDF
+                  {isDownloading ? (
+                    <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  )}
+                  {isDownloading ? 'Downloading...' : 'Download PDF'}
                 </button>
               </div>
             </div>
@@ -326,7 +378,7 @@ export default function IdeaPage() {
         </div>
 
         {/* Chat Sidebar - Desktop */}
-        <div className="hidden lg:flex w-80 xl:w-96 border-l border-[var(--border)] flex-col">
+        <div className="hidden lg:flex w-80 xl:w-96 border-l border-[var(--border)] flex-col sticky top-0 h-screen">
           <IdeaChat
             ideaId={ideaId}
             suggestions={suggestions}

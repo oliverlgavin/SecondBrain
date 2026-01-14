@@ -55,11 +55,21 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { text } = await request.json();
+    const { text, currentDate, currentTime, currentDay } = await request.json();
 
     if (!text || typeof text !== 'string') {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
     }
+
+    // Build dynamic system prompt with current date context
+    const dateContext = currentDate
+      ? `\n\nCurrent date/time context:
+- Today's date: ${currentDate} (${currentDay})
+- Current time: ${currentTime}
+- When user says "today", use: ${currentDate}
+- When user says "tomorrow", calculate based on ${currentDate}
+- When user says "next week", calculate 7 days from ${currentDate}`
+      : '';
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -70,7 +80,7 @@ export async function POST(request: Request) {
           content: `Categorize this input: "${text}"`,
         },
       ],
-      system: SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT + dateContext,
     });
 
     const responseText = message.content[0].type === 'text' ? message.content[0].text : '';

@@ -134,8 +134,11 @@ Examples:
 - "Clear notes" → {"action": "update", "updates": {"notes": ""}}
 - "Add location: 123 Main St" → {"action": "update", "updates": {"location": "123 Main St"}}
 - "Remove location" → {"action": "update", "updates": {"location": ""}}
-${hasLocation ? `- "Get directions" → Provide Google Maps link to ${taskData.location}
-- "How far am I?" → Tell them: ${distanceInfo || 'Location services unavailable'}` : ''}
+${hasLocation ? `- "Get directions" → IMPORTANT: Use EXACTLY this URL format: https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(taskData.location || '')}
+- "How far am I?" → Tell them: ${distanceInfo || 'Location services unavailable'}
+
+CRITICAL: When providing directions links, use ONLY this exact format: https://www.google.com/maps/dir/?api=1&destination=ENCODED_ADDRESS
+Never make up or hallucinate URLs. Only use the exact URL pattern above with the task's location.` : ''}
 
 Be concise. ${hasLocation ? 'Proactively mention travel time if relevant.' : 'Focus on helping them complete the task efficiently.'}`;
 

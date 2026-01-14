@@ -22,6 +22,12 @@ const categoryColumns: Record<Category, string[]> = {
   tasks: ['Task', 'Deadline', 'Priority'],
 };
 
+// Helper to truncate long text
+const truncateText = (text: string, maxLength: number = 60): string => {
+  if (!text || text.length <= maxLength) return text;
+  return text.substring(0, maxLength).trim() + '...';
+};
+
 export function LiveCard({
   title,
   category,
@@ -160,26 +166,30 @@ export function LiveCard({
       );
     }
 
-    // Ideas insight column - make it a clickable link
+    // Ideas insight column - make it a clickable link with truncation
     if (category === 'ideas' && colIndex === 0) {
+      const displayValue = truncateText(value, 60);
       return (
         <Link
           href={`/ideas/${entry.id}`}
           className="cursor-pointer hover:text-[var(--accent)] underline decoration-dotted"
+          title={value} // Show full text on hover
         >
-          {value || <span className="text-[var(--foreground-muted)] italic">empty</span>}
+          {displayValue || <span className="text-[var(--foreground-muted)] italic">empty</span>}
         </Link>
       );
     }
 
-    // Tasks column - make task name a clickable link
+    // Tasks column - make task name a clickable link with truncation
     if (category === 'tasks' && colIndex === 0) {
+      const displayValue = truncateText(value, 60);
       return (
         <Link
           href={`/task/${entry.id}`}
           className="cursor-pointer hover:text-[var(--accent)] underline decoration-dotted"
+          title={value} // Show full text on hover
         >
-          {value || <span className="text-[var(--foreground-muted)] italic">empty</span>}
+          {displayValue || <span className="text-[var(--foreground-muted)] italic">empty</span>}
         </Link>
       );
     }
@@ -215,7 +225,7 @@ export function LiveCard({
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm table-fixed">
             <thead>
               <tr className="border-b border-[var(--border)]">
                 {columns.map((col) => (
@@ -236,7 +246,7 @@ export function LiveCard({
                   className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--background-tertiary)] transition-colors"
                 >
                   {columns.map((_, colIndex) => (
-                    <td key={colIndex} className="px-4 py-2">
+                    <td key={colIndex} className="px-4 py-2 break-words max-w-xs">
                       {renderCell(entry, colIndex)}
                     </td>
                   ))}
@@ -246,7 +256,7 @@ export function LiveCard({
                         <button
                           onClick={() => onArchive(entry.id)}
                           className="p-1 text-[var(--foreground-muted)] hover:text-green-400 transition-colors"
-                          title="Archive"
+                          title="Mark as completed"
                         >
                           <CheckIcon className="w-4 h-4" />
                         </button>

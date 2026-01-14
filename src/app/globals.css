@@ -80,6 +80,31 @@ body {
   outline-offset: 2px;
 }
 
+/* Input text colors for accessibility */
+input,
+textarea,
+select {
+  color: var(--foreground);
+  background-color: var(--background-secondary);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--foreground-muted);
+}
+
+/* Ensure autofill doesn't override colors */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-box-shadow: 0 0 0px 1000px var(--background-secondary) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 /* Mobile slide-up animation */
 @keyframes slide-up {
   from {
@@ -92,4 +117,20 @@ body {
 
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
+}
+
+/* Toast slide-in animation */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
 }

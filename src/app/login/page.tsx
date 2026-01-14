@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const router = useRouter();
   const supabase = createClientSupabase();
 
@@ -40,8 +41,11 @@ export default function LoginPage() {
         if (error) {
           setError(error.message);
         } else {
-          router.push('/');
-          router.refresh();
+          setShowSuccess(true);
+          setTimeout(() => {
+            router.push('/');
+            router.refresh();
+          }, 2000);
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -64,6 +68,21 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--background)] px-4">
+      {/* Success Toast */}
+      {showSuccess && (
+        <div className="fixed top-4 right-4 z-50 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-lg animate-slide-in max-w-sm">
+          <div className="flex items-center gap-3">
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <div>
+              <p className="font-medium">Account created!</p>
+              <p className="text-sm opacity-90">Redirecting to dashboard...</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="w-full max-w-sm p-6 sm:p-8">
         <h1 className="text-2xl font-semibold text-[var(--foreground)] mb-2 text-center">
           Second Brain

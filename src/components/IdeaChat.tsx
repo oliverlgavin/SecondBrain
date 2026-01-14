@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { MarkdownContent } from '@/components/MarkdownContent';
 
 interface Message {
   id: string;
@@ -126,7 +127,14 @@ export function IdeaChat({ ideaId, suggestions, onIdeaUpdate }: IdeaChatProps) {
               {quickActions.map((action, i) => (
                 <button
                   key={i}
-                  onClick={() => setInput(action.text)}
+                  onClick={() => {
+                    setInput(action.text);
+                    // Auto-send after a brief delay
+                    setTimeout(() => {
+                      const sendBtn = document.querySelector('[data-send-btn="idea"]') as HTMLButtonElement;
+                      if (sendBtn) sendBtn.click();
+                    }, 100);
+                  }}
                   className="text-left p-3 bg-[var(--background-tertiary)] hover:bg-[var(--background)] border border-[var(--border)] rounded-lg text-sm text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
                 >
                   <span className="mr-2">{action.icon}</span>
@@ -153,7 +161,7 @@ export function IdeaChat({ ideaId, suggestions, onIdeaUpdate }: IdeaChatProps) {
                   : 'bg-[var(--background-tertiary)] text-[var(--foreground)]'
               }`}
             >
-              <p className="whitespace-pre-wrap">{message.content}</p>
+              <MarkdownContent content={message.content} />
             </div>
           </div>
         ))}
@@ -189,6 +197,7 @@ export function IdeaChat({ ideaId, suggestions, onIdeaUpdate }: IdeaChatProps) {
           <button
             onClick={sendMessage}
             disabled={!input.trim() || isLoading}
+            data-send-btn="idea"
             className="px-3 py-2 text-[var(--accent)] hover:text-violet-300 disabled:text-zinc-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

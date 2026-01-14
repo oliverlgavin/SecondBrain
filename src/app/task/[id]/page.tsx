@@ -145,7 +145,7 @@ export default function TaskDetailPage() {
 
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Main Content */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto w-full">
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 xl:px-12 w-full">
           {/* Back Button */}
           <Link
             href="/"
@@ -209,7 +209,11 @@ export default function TaskDetailPage() {
                   </div>
                 )}
               </div>
-              <TaskMap location={taskData.location!} className="h-48 sm:h-64 rounded-lg overflow-hidden" />
+              <TaskMap
+                location={taskData.location!}
+                userLocation={{ latitude, longitude }}
+                className="h-48 sm:h-64 rounded-lg overflow-hidden"
+              />
               <a
                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(taskData.location!)}`}
                 target="_blank"
@@ -276,7 +280,7 @@ export default function TaskDetailPage() {
         </div>
 
         {/* Chat Sidebar - Desktop */}
-        <div className="hidden lg:flex w-80 xl:w-96 border-l border-[var(--border)] flex-col">
+        <div className="hidden lg:flex w-80 xl:w-96 border-l border-[var(--border)] flex-col sticky top-0 h-screen">
           <TaskChat
             taskId={taskId}
             userLocation={{ latitude, longitude }}

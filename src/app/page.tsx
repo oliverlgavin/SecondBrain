@@ -21,6 +21,8 @@ export default function Dashboard() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [captureError, setCaptureError] = useState<string | null>(null);
+  const [captureSuccess, setCaptureSuccess] = useState(false);
 
   const fetchEntries = useCallback(async () => {
     try {
@@ -42,19 +44,43 @@ export default function Dashboard() {
 
   const handleCapture = async (text: string) => {
     setIsProcessing(true);
+    setCaptureError(null);
+    setCaptureSuccess(false);
+
     try {
+      // Get current local date in ISO format
+      const now = new Date();
+      const currentDate = now.toISOString().split('T')[0];
+      const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
+
       const res = await fetch('/api/capture', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({
+          text,
+          currentDate,
+          currentTime,
+          currentDay,
+        }),
       });
 
       if (res.ok) {
         const { entry } = await res.json();
-        setEntries((prev) => [entry, ...prev]);
+        if (entry) {
+          setEntries((prev) => [entry, ...prev]);
+          setCaptureSuccess(true);
+          setTimeout(() => setCaptureSuccess(false), 3000);
+        } else {
+          setCaptureError('Entry was not saved properly');
+        }
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        setCaptureError(errorData.error || 'Failed to capture entry');
       }
     } catch (error) {
       console.error('Capture failed:', error);
+      setCaptureError('Network error. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -93,19 +119,58 @@ export default function Dashboard() {
     }
   };
 
-  const handleArchive = async (id: string) => {
+  const handleCompleteTask = async (id: string) => {
     try {
+      // Find the current entry to get its data
+      const entry = entries.find((e) => e.id === id);
+      if (!entry) return;
+
+      const updatedData = {
+        ...entry.data,
+        status: 'completed',
+      };
+
       const res = await fetch(`/api/entries/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ archived: true }),
+        body: JSON.stringify({ data: updatedData }),
       });
 
       if (res.ok) {
-        setEntries((prev) => prev.filter((e) => e.id !== id));
+        const updated = await res.json();
+        setEntries((prev) =>
+          prev.map((e) => (e.id === id ? updated : e))
+        );
       }
     } catch (error) {
-      console.error('Archive failed:', error);
+      console.error('Complete task failed:', error);
+    }
+  };
+
+  const handleManualCreate = async (category: string, data: Record<string, string>) => {
+    try {
+      const res = await fetch('/api/entries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category,
+          data,
+          confidence: 1.0,
+          needs_review: false,
+        }),
+      });
+
+      if (res.ok) {
+        const newEntry = await res.json();
+        setEntries((prev) => [newEntry, ...prev]);
+        setCaptureSuccess(true);
+        setTimeout(() => setCaptureSuccess(false), 3000);
+      } else {
+        setCaptureError('Failed to create entry');
+      }
+    } catch (error) {
+      console.error('Manual create failed:', error);
+      setCaptureError('Failed to create entry');
     }
   };
 
@@ -165,7 +230,39 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col lg:flex-row">
-      <div className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 w-full">
+      {/* Capture Success Toast */}
+      {captureSuccess && (
+        <div className="fixed top-4 right-4 z-50 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-lg animate-slide-in">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-sm font-medium">Captured successfully!</span>
+          </div>
+        </div>
+      )}
+
+      {/* Capture Error Toast */}
+      {captureError && (
+        <div className="fixed top-4 right-4 z-50 bg-red-600 text-white px-4 py-3 rounded-lg shadow-lg">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span className="text-sm font-medium">{captureError}</span>
+            <button
+              onClick={() => setCaptureError(null)}
+              className="ml-2 hover:text-red-200"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8">
         <header className="flex items-center justify-between mb-6 sm:mb-8">
           <h1 className="text-xl sm:text-2xl font-semibold text-[var(--foreground)]">Second Brain</h1>
           <div className="flex items-center gap-4">
@@ -182,7 +279,7 @@ export default function Dashboard() {
         <div className="space-y-6 sm:space-y-8">
           <MorningSummary onRefresh={fetchSummary} />
 
-          <CaptureZone onCapture={handleCapture} isProcessing={isProcessing} />
+          <CaptureZone onCapture={handleCapture} onManualCreate={handleManualCreate} isProcessing={isProcessing} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {cardConfig.map(({ category, title, color }) => (
@@ -193,7 +290,7 @@ export default function Dashboard() {
                 entries={getEntriesByCategory(category)}
                 onUpdate={handleUpdate}
                 onDelete={handleDelete}
-                onArchive={category === 'tasks' ? handleArchive : undefined}
+                onArchive={category === 'tasks' ? handleCompleteTask : undefined}
                 accentColor={color}
               />
             ))}
