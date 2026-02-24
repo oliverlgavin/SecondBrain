@@ -83,12 +83,15 @@ export async function POST(request: Request) {
       system: SYSTEM_PROMPT + dateContext,
     });
 
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
+    const rawText = message.content[0].type === 'text' ? message.content[0].text : '';
+    // Strip markdown fences if Claude wraps JSON in ```json ... ```
+    const responseText = rawText.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
     let result: CaptureResult;
 
     try {
       result = JSON.parse(responseText);
     } catch {
+      console.error('Failed to parse AI response:', rawText);
       return NextResponse.json(
         { error: 'Failed to parse AI response' },
         { status: 500 }

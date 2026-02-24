@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { createServerSupabase } from '@/lib/supabase-server';
-import type { IdeaData } from '@/lib/supabase';
+import type { ProjectData } from '@/lib/supabase';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -11,11 +11,11 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-const SYSTEM_PROMPT = `You are an AI assistant that helps users implement their ideas. Given an idea, provide practical suggestions for how to bring it to life.
+const SYSTEM_PROMPT = `You are an AI project advisor that helps users plan and complete their projects. Given a project, provide practical guidance and a roadmap for achieving the goal.
 
 Return a JSON object with:
 {
-  "summary": "A brief 1-2 sentence summary of the idea",
+  "summary": "A brief 1-2 sentence assessment of the project and its current state",
   "steps": [
     {
       "title": "Step title",
@@ -23,15 +23,16 @@ Return a JSON object with:
     }
   ],
   "resources": ["List of tools, technologies, or resources that could help"],
-  "considerations": ["Important things to keep in mind, potential challenges"],
-  "timeEstimate": "Rough time estimate (e.g., '2-4 weeks', '1-2 months')"
+  "considerations": ["Important risks, blockers, or things to keep in mind"],
+  "milestones": ["Key checkpoints to track progress toward the goal"]
 }
 
 Guidelines:
-- Provide 4-6 actionable steps
+- Provide 4-6 actionable steps tailored to the project's current status
+- If the project is "on-hold", suggest how to restart momentum
+- If the project is "active", focus on the next action and moving forward
 - Be specific and practical
-- Consider the user's perspective as someone implementing this themselves
-- Include both technical and non-technical considerations where relevant
+- Consider dependencies between steps
 
 Return ONLY valid JSON, no markdown or explanation.`;
 
@@ -52,18 +53,18 @@ export async function GET(request: Request, { params }: RouteParams) {
     .select('*')
     .eq('id', id)
     .eq('user_id', user.id)
-    .eq('category', 'ideas')
+    .eq('category', 'projects')
     .single();
 
   if (error || !entry) {
-    return NextResponse.json({ error: 'Idea not found' }, { status: 404 });
+    return NextResponse.json({ error: 'Project not found' }, { status: 404 });
   }
 
-  const ideaData = entry.data as IdeaData & { suggestions?: unknown };
+  const projectData = entry.data as ProjectData & { suggestions?: unknown };
 
   // Return cached suggestions if available
-  if (ideaData.suggestions && !regenerate) {
-    return NextResponse.json({ idea: entry, suggestions: ideaData.suggestions });
+  if (projectData.suggestions && !regenerate) {
+    return NextResponse.json({ project: entry, suggestions: projectData.suggestions });
   }
 
   try {
@@ -73,13 +74,13 @@ export async function GET(request: Request, { params }: RouteParams) {
       messages: [
         {
           role: 'user',
-          content: `Help me implement this idea:
+          content: `Help me complete this project:
 
-Idea: ${ideaData.insight}
-Category: ${ideaData.category}
-Date captured: ${ideaData.date}
+Goal: ${projectData.goal}
+Status: ${projectData.status}
+Next Action: ${projectData.nextAction}
 
-Please provide practical suggestions for how to bring this idea to life.`,
+Please provide practical guidance and a roadmap for achieving this goal.`,
         },
       ],
       system: SYSTEM_PROMPT,
@@ -92,7 +93,7 @@ Please provide practical suggestions for how to bring this idea to life.`,
     try {
       suggestions = JSON.parse(responseText);
     } catch {
-      console.error('Failed to parse idea suggestions:', rawText);
+      console.error('Failed to parse project suggestions:', rawText);
       return NextResponse.json(
         { error: 'Failed to parse AI response' },
         { status: 500 }
@@ -103,15 +104,15 @@ Please provide practical suggestions for how to bring this idea to life.`,
     await supabase
       .from('entries')
       .update({
-        data: { ...ideaData, suggestions },
+        data: { ...projectData, suggestions },
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
       .eq('user_id', user.id);
 
-    return NextResponse.json({ idea: entry, suggestions });
+    return NextResponse.json({ project: entry, suggestions });
   } catch (error) {
-    console.error('Suggestions error:', error);
+    console.error('Project suggestions error:', error);
     return NextResponse.json(
       { error: 'Failed to generate suggestions' },
       { status: 500 }

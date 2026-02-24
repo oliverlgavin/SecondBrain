@@ -27,25 +27,26 @@ export default function IdeaPage() {
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'idle'>('saved');
   const [isSavedToCollection, setIsSavedToCollection] = useState(false);
   const [savingToCollection, setSavingToCollection] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
 
-  const fetchData = async (showLoading = false) => {
-    if (showLoading) setLoading(true);
+  const fetchData = async (regenerate = false) => {
+    if (regenerate) setRegenerating(true);
     try {
-      // Add cache buster to force fresh data
-      const res = await fetch(`/api/ideas/${ideaId}/suggestions?t=${Date.now()}`);
+      const url = `/api/ideas/${ideaId}/suggestions${regenerate ? '?regenerate=true' : ''}`;
+      const res = await fetch(url);
       if (!res.ok) {
         throw new Error('Failed to fetch');
       }
       const data = await res.json();
       setIdea(data.idea);
       setSuggestions(data.suggestions);
-      // Set initial saved to collection state
       const ideaData = data.idea?.data as IdeaData | undefined;
       setIsSavedToCollection(ideaData?.saved || false);
     } catch {
       setError('Failed to load idea suggestions');
     } finally {
       setLoading(false);
+      setRegenerating(false);
     }
   };
 
@@ -208,6 +209,18 @@ export default function IdeaPage() {
               </button>
 
               <div className="flex items-center gap-2">
+                {/* Regenerate Button */}
+                <button
+                  onClick={() => fetchData(true)}
+                  disabled={regenerating}
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--background-tertiary)] text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-[var(--background-secondary)] hover:text-[var(--foreground)] disabled:opacity-50 rounded-lg transition-colors text-sm font-medium"
+                >
+                  <svg className={`w-4 h-4 ${regenerating ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  {regenerating ? 'Regenerating...' : 'Regenerate'}
+                </button>
+
                 {/* Save Indicator Button */}
                 <button
                   onClick={handleManualSave}

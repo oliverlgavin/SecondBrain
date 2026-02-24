@@ -100,8 +100,8 @@ export function CaptureZone({ onCapture, onManualCreate, isProcessing }: Capture
   };
 
   return (
-    <div className="w-full">
-      <label className="block text-sm font-medium text-[var(--foreground-muted)] mb-2">
+    <div className="w-full rounded-xl border border-[var(--border)] bg-[var(--background-secondary)]/80 backdrop-blur-sm p-5 shadow-sm focus-within:border-[var(--accent)]/60 focus-within:ring-2 focus-within:ring-[var(--accent)]/20 transition-all duration-200">
+      <label className="block text-sm font-semibold text-[var(--foreground)] mb-3">
         Capture Anything
       </label>
       <div className="relative">
@@ -110,7 +110,7 @@ export function CaptureZone({ onCapture, onManualCreate, isProcessing }: Capture
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="What's on your mind? Type a thought, task, idea, or person..."
-          className="w-full h-32 px-4 py-3 bg-[var(--background-secondary)] border border-[var(--border)] rounded-lg text-[var(--foreground)] placeholder-[var(--foreground-muted)] resize-none focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)] transition-colors"
+          className="w-full h-32 px-4 py-3 bg-[var(--background)] border border-[var(--border)] rounded-lg text-[var(--foreground)] placeholder-[var(--foreground-muted)] resize-none focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-colors"
           disabled={isProcessing}
         />
 

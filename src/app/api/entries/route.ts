@@ -11,7 +11,7 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const category = searchParams.get('category');
-  const includeArchived = searchParams.get('archived') === 'true';
+  const archivedParam = searchParams.get('archived');
   const needsReview = searchParams.get('needs_review') === 'true';
 
   let query = supabase
@@ -24,7 +24,9 @@ export async function GET(request: Request) {
     query = query.eq('category', category);
   }
 
-  if (!includeArchived) {
+  if (archivedParam === 'only') {
+    query = query.eq('archived', true);
+  } else if (archivedParam !== 'true') {
     query = query.eq('archived', false);
   }
 

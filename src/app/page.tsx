@@ -6,6 +6,7 @@ import { LiveCard } from '@/components/LiveCard';
 import { MorningSummary } from '@/components/MorningSummary';
 import { ReviewSidebar } from '@/components/ReviewSidebar';
 import { SavedIdeas } from '@/components/SavedIdeas';
+import { Archive } from '@/components/Archive';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { createClientSupabase } from '@/lib/supabase-client';
 import type { Entry, Category } from '@/lib/supabase';
@@ -119,31 +120,26 @@ export default function Dashboard() {
     }
   };
 
-  const handleCompleteTask = async (id: string) => {
+  const handleArchive = async (id: string) => {
     try {
-      // Find the current entry to get its data
       const entry = entries.find((e) => e.id === id);
       if (!entry) return;
 
-      const updatedData = {
-        ...entry.data,
-        status: 'completed',
-      };
+      const updatedData = entry.category === 'tasks'
+        ? { ...entry.data, status: 'completed' }
+        : entry.data;
 
       const res = await fetch(`/api/entries/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: updatedData }),
+        body: JSON.stringify({ data: updatedData, archived: true }),
       });
 
       if (res.ok) {
-        const updated = await res.json();
-        setEntries((prev) =>
-          prev.map((e) => (e.id === id ? updated : e))
-        );
+        setEntries((prev) => prev.filter((e) => e.id !== id));
       }
     } catch (error) {
-      console.error('Complete task failed:', error);
+      console.error('Archive failed:', error);
     }
   };
 
@@ -229,7 +225,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex flex-col lg:flex-row">
+    <div className="min-h-screen dashboard-bg flex flex-col lg:flex-row">
       {/* Capture Success Toast */}
       {captureSuccess && (
         <div className="fixed top-4 right-4 z-50 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-lg animate-slide-in">
@@ -262,14 +258,21 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8">
-        <header className="flex items-center justify-between mb-6 sm:mb-8">
-          <h1 className="text-xl sm:text-2xl font-semibold text-[var(--foreground)]">Second Brain</h1>
-          <div className="flex items-center gap-4">
+      <div className="relative z-10 flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8">
+        <header className="flex items-center justify-between mb-8 sm:mb-10 animate-fade-in-up">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--foreground)] tracking-tight">
+              Second Brain
+            </h1>
+            <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+              Capture thoughts, tasks, and ideas in one place
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
             <ThemeToggle />
             <button
               onClick={handleLogout}
-              className="text-sm text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
+              className="text-sm text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors px-3 py-2 rounded-lg hover:bg-[var(--background-secondary)]"
             >
               Sign out
             </button>
@@ -277,26 +280,41 @@ export default function Dashboard() {
         </header>
 
         <div className="space-y-6 sm:space-y-8">
-          <MorningSummary onRefresh={fetchSummary} />
+          <div className="animate-fade-in-up animate-fade-in-up-delay-1">
+            <MorningSummary onRefresh={fetchSummary} />
+          </div>
 
-          <CaptureZone onCapture={handleCapture} onManualCreate={handleManualCreate} isProcessing={isProcessing} />
+          <div className="animate-fade-in-up animate-fade-in-up-delay-2">
+            <CaptureZone onCapture={handleCapture} onManualCreate={handleManualCreate} isProcessing={isProcessing} />
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            {cardConfig.map(({ category, title, color }) => (
-              <LiveCard
+            {cardConfig.map(({ category, title, color }, index) => (
+              <div
                 key={category}
-                title={title}
-                category={category}
-                entries={getEntriesByCategory(category)}
-                onUpdate={handleUpdate}
-                onDelete={handleDelete}
-                onArchive={category === 'tasks' ? handleCompleteTask : undefined}
-                accentColor={color}
-              />
+                className="animate-fade-in-up"
+                style={{ animationDelay: `${0.24 + index * 0.08}s` }}
+              >
+                <LiveCard
+                  title={title}
+                  category={category}
+                  entries={getEntriesByCategory(category)}
+                  onUpdate={handleUpdate}
+                  onDelete={handleDelete}
+                  onArchive={handleArchive}
+                  accentColor={color}
+                />
+              </div>
             ))}
           </div>
 
-          <SavedIdeas entries={entries} />
+          <div className="animate-fade-in-up animate-fade-in-up-delay-5">
+            <SavedIdeas entries={entries} />
+          </div>
+
+          <div className="animate-fade-in-up animate-fade-in-up-delay-5">
+            <Archive />
+          </div>
         </div>
       </div>
 

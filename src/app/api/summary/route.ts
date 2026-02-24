@@ -58,8 +58,8 @@ export async function GET() {
       .join('\n');
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 512,
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 256,
       messages: [
         {
           role: 'user',
@@ -76,13 +76,15 @@ Return as a JSON array of 3 strings, nothing else. Example: ["Focus point 1", "F
       ],
     });
 
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : '[]';
+    const rawText = message.content[0].type === 'text' ? message.content[0].text : '[]';
+    const responseText = rawText.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
 
     let bullets: string[];
     try {
       bullets = JSON.parse(responseText);
     } catch {
-      bullets = ['Review your pending tasks', 'Check project progress', 'Capture new ideas'];
+      console.error('Failed to parse summary response:', rawText);
+      bullets = [];
     }
 
     return NextResponse.json({ bullets });
